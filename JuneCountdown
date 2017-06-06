@@ -1,0 +1,49 @@
+import datetime
+import math
+import numpy
+
+
+validDate = False
+
+dateDt = 0
+
+while validDate == False:
+    print('what date is important to you?')
+    dateStr = input(':')
+    try:
+        dateDt= datetime.datetime.strptime(dateStr, '%m/%d/%Y')
+        print('date accepted: ', dateDt.strftime('%B %d, %Y'))
+        validDate = True
+    #planning to use American format because I'm and American
+    #I'm curious to spend some time figuring out how to take
+    #text input and do thw work to make sure I convert it
+    #correctly
+    except:
+        print('Sorry, your date didn\'t convert. Try again. Please use and American format')
+        
+timeDiff = dateDt-datetime.datetime.now()
+doneReporting = False
+menuDict = {
+    'S'  : (timeDiff.seconds),
+    'D'  : (timeDiff.days),
+    'W'  : (str(math.floor(timeDiff.days/7))+' weeks '+str(math.floor(timeDiff.days%7)) + ' day(s)'),
+    'A'  : (timeDiff),
+    'WD' : (numpy.busday_count(datetime.datetime.now(),dateDt))
+ }
+while doneReporting == False:
+    print('How do you want the results?')
+    print('type S for seconds')
+    print('type D for days')
+    print('type W for weeks')
+    print('type WD for weekdays')
+    print('type A for absolute (days, hours, minutes and seconds)')
+    print('type Q to quit')
+    showTimeType = input(':')
+    if showTimeType == 'Q':
+        doneReporting = True
+    else:
+        print(menuDict[showTimeType])
+
+
+
+        
