@@ -4,6 +4,7 @@
 # elements of A are all factors of x while x is a factor of all elements of B
 # output is a count of xs
 import random
+import time
 
 def sample_given():
     sample_ouput = []
@@ -85,26 +86,26 @@ def solve(input_list):
 def getTotalX(a, b):
     lis1 = []
     finalCount = 0
-    print('for loop mins', min(a), min(b))
+    #print('for loop mins', min(a), min(b))
     for elem in range(min(a), min(b)+1):
-        print('elem: ', elem)
+        #print('elem: ', elem)
         countFirst = 0
         countSecond = 0
-        print('for loop i: ', range(0,len(a)))
+        #print('for loop i: ', range(0,len(a)))
         for i in range(0, len(a)):
-            print('elem % a[i]: ', elem,' % ', a[i],' = ',elem % a[i])
-            print('countfirst = ', countFirst)
+            #print('elem % a[i]: ', elem,' % ', a[i],' = ',elem % a[i])
+            #print('countfirst = ', countFirst)
             if elem % a[i] == 0:
-                print('got mod 0')
+                #print('got mod 0')
                 countFirst +=1
         if countFirst == len(a):
             for el in range(0, len(b)):
-                print('b[el] % elem: ', b[el],' % ', elem,' = ',b[el] % elem)
+                #print('b[el] % elem: ', b[el],' % ', elem,' = ',b[el] % elem)
                 if b[el] % elem == 0:
-                    print('got mod2 again')
+                    #print('got mod2 again')
                     countSecond +=1
             if countSecond == len(b):
-                print('thats a keeper', elem)
+                #print('thats a keeper', elem)
                 finalCount +=1
     return finalCount
 
@@ -115,51 +116,76 @@ def rebuild_to_be_faster(input_list):
     possible_factors = []
     currect_factor = range_of_factors[0]
     multiplier = 1
-    print('A list: ', a_list, ' B list: ', b_list, ' range: ',range_of_factors)
+    #print('A list: ', a_list, ' B list: ', b_list, ' range: ',range_of_factors)
     while currect_factor <= range_of_factors[1]:
         possible_factors.append(currect_factor)
         multiplier = multiplier + 1
         currect_factor = range_of_factors[0] * multiplier
-        print('possible factors: ',possible_factors,)
+        #print('possible factors: ',possible_factors,)
     #possible factor list built, now test against list A
     passed_test_a = []
     for possibility in possible_factors:
         in_the_running = True
         for a_item in a_list:
-            print('test a: ', possibility,' % ', a_item, ' = ', possibility % a_item )
+            #print('test a: ', possibility,' % ', a_item, ' = ', possibility % a_item )
             if possibility % a_item != 0:
                 in_the_running = False
         if in_the_running == True:
             passed_test_a.append(possibility)
-    print('passed test a: ', passed_test_a)
+    #print('passed test a: ', passed_test_a)
     if len(passed_test_a) > 0:
         factors = []
         for still_possible in passed_test_a:
             in_the_running = True
             for b_item in b_list:
-                print('test b: ', b_item , ' % ', still_possible, ' = ', b_item%still_possible)
+                #print('test b: ', b_item , ' % ', still_possible, ' = ', b_item%still_possible)
                 if b_item % still_possible != 0:
                     in_the_running = False
             if in_the_running == True:
                 factors.append(still_possible)
-        print(factors)
+        #print(factors)
     else:
         factors = []
     return len(factors)
 
+time_keeper = [[],[],[],[]]
+#slot 0 is data, slot 1 is Ardy,
+#sot 2 is Mike's first attempt, slow 3 is Mike's second attempt
 foo = sample_given()
-#print(rebuild_to_be_faster(foo))
-#print('my version: ',solve(foo))
-#print('Ardys version: ', getTotalX(list(map(int,foo[1])),list(map(int,foo[2]))))
-counter = 0
-while counter < 10:
+time_keeper[0].append(foo)
+temp_time_keeper = time.time()
+getTotalX(list(map(int,foo[1])),list(map(int,foo[2])))
+time_keeper[1].append(time.time() - temp_time_keeper)
+temp_time_keeper = time.time()
+solve(foo)
+time_keeper[2].append(time.time() - temp_time_keeper)
+temp_time_keeper = time.time()
+rebuild_to_be_faster(foo)
+time_keeper[3].append(time.time() - temp_time_keeper)
+counter = 1 #0 was test data
+
+while counter < 10000:
     foo = generate_random()
-    #print(foo)
-    my_version = rebuild_to_be_faster(foo)
-    #ardys_version = getTotalX(list(map(int,foo[1])),list(map(int,foo[2])))
-    if my_version != 0:
-    #    if my_version != ardys_version:
-    #        print('RED ALERT')
-    #    print(foo)
-    #    print('mine: ', my_version, ' ardys: ', ardys_version)
-        counter = counter + 1
+    time_keeper[0].append(foo)
+    temp_time_keeper = time.time()
+    getTotalX(list(map(int,foo[1])),list(map(int,foo[2])))
+    time_keeper[1].append(time.time() - temp_time_keeper)
+    temp_time_keeper = time.time()
+    solve(foo)
+    time_keeper[2].append(time.time() - temp_time_keeper)
+    temp_time_keeper = time.time()
+    rebuild_to_be_faster(foo)
+    time_keeper[3].append(time.time() - temp_time_keeper)
+    counter = counter + 1
+
+#print(time_keeper)
+
+#ardy_time = 0
+#for a_time in time_keeper[1]:
+#    ardy_time = ardy_time + a_time
+#print(ardy_time)
+
+print('Ardys total time was: ' , sum(time_keeper[1]))
+print('Mikes first attempt total time was: ' , sum(time_keeper[2]))
+print('Mikes second attempt total time was: ' , sum(time_keeper[3]))
+
